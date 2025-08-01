@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú Tequilera Jose Cuervo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f8f8; margin: 0; }
+        .navbar {
+            background: #222; color: #fff; display: flex; align-items: center; padding: 10px 20px;
+        }
+        .navbar .logo { margin-right: auto; }
+        .navbar img { height: 40px; }
+        .navbar .nav-links {
+            display: flex; align-items: center; gap: 25px;
+        }
+        .navbar a {
+            color: #fff; text-decoration: none; font-weight: bold; position: relative;
+        }
+        .navbar .cart {
+            display: flex; align-items: center; position: relative;
+        }
+        .navbar .cart-count {
+            background: #eab308; color: #222; border-radius: 50%; padding: 2px 8px; font-size: 14px;
+            position: absolute; top: -8px; right: -18px;
+        }
+        .menu { display: flex; flex-wrap: wrap; justify-content: center; margin: 30px 0; }
+        .tequila-card {
+            background: #fff; border: 1px solid #ddd; border-radius: 8px; margin: 15px;
+            padding: 20px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 280px; transition: transform 0.2s ease-in-out;
+        }
+        .tequila-card:hover {
+            transform: translateY(-5px);
+        }
+        .tequila-card img {
+            max-width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px;
+        }
+        .tequila-card h2 {
+            font-size: 1.5em; color: #333; margin-bottom: 10px;
+        }
+        .tequila-card p {
+            color: #666; font-size: 0.95em; line-height: 1.5; margin-bottom: 15px;
+        }
+        .tequila-card .precios {
+            margin-bottom: 15px; font-weight: bold; color: #555;
+        }
+        .tequila-card select {
+            width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 15px;
+        }
+        .tequila-card button {
+            background: #d4af37; color: #fff; border: none; padding: 10px 20px;
+            border-radius: 5px; cursor: pointer; font-size: 1em; font-weight: bold;
+            transition: background 0.2s;
+        }
+        .tequila-card button:hover {
+            background: #bfa76f;
+        }
+        .mensaje-agregado {
+            background-color: #28a745;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 5px;
+            z-index: 1000;
+            display: none; /* Oculto por defecto */
+        }
+        .cantidad-input {
+            width: 80px; /* Ajuste el ancho del input de cantidad */
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="IMAGENES JOSE CUERVO/JOSE CUERVO LOGO blanco.png" alt="Logo Jose Cuervo">
+            </a>
+            <span>Tequilera Jose Cuervo</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Página Principal</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="mixiologia.html">Mixología</a>
+            <a href="carrito.html" class="cart">
+                Carrito <span class="cart-count" id="cart-count">0</span>
+            </a>
+            <a href="ver_pedido.html">Ver Pedido</a>
+        </div>
+    </div>
+
+    <div class="mensaje-agregado" id="mensaje-agregado"></div>
+
+    <section class="menu" id="menu-productos">
+        </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuProductos = document.getElementById('menu-productos');
+            const mensajeAgregado = document.getElementById('mensaje-agregado');
+
+            // Productos por defecto si no hay nada en localStorage
+            const defaultProducts = [
+                {
+                    id: 1,
+                    name: 'Maestro Doble',
+                    description: 'Tequila Maestro Doble de Jose Cuervo. Un tequila ultra-premium 100% de agave azul.',
+                    image: "/Maestro Doble.j",
+                    menudeo: 450.00,
+                    mayoreo: 400.00,
+                    botellasPorCaja: 12 // Agregado para el cálculo de mayoreo
+                },
+                {
+                    id: 2,
+                    name: 'Tequila Jose Cuervo Tradicional',
+                    description: 'El tequila tradicional de Jose Cuervo, perfecto para margaritas o para tomar solo.',
+                    image: "/jose cuervo tradicional.jpg",
+                    menudeo: 380.00,
+                    mayoreo: 340.00,
+                    botellasPorCaja: 12
+                },
+                {
+                    id: 3,
+                    name: 'Jose Cuervo Especial',
+                    description: 'Tequila Jose Cuervo Especial, un clásico versátil ideal para cocteles.',
+                    image: "/jose cuervo especial.jpg",
+                    menudeo: 320.00,
+                    mayoreo: 280.00,
+                    botellasPorCaja: 12
+                },
+                {
+                    id: 4,
+                    name: 'Tequila 1800',
+                    description: 'Tequila 1800, 100% de agave azul, con un sabor suave y complejo.',
+                    image: "/1800.jpeg",
+                    menudeo: 550.00,
+                    mayoreo: 500.00,
+                    botellasPorCaja: 6
+                },
+            ];
+
+            function obtenerProductos() {
+                const storedProducts = localStorage.getItem('productosCuervo');
+                return storedProducts ? JSON.parse(storedProducts) : defaultProducts;
+            }
+
+            function renderizarProductos() {
+                const productos = obtenerProductos();
+                menuProductos.innerHTML = ''; // Limpiar productos existentes
+
+                productos.forEach(producto => {
+                    const card = document.createElement('div');
+                    card.className = 'tequila-card';
+                    card.innerHTML = `
+                        <img src="${producto.image}" alt="${producto.name}">
+                        <h2>${producto.name}</h2>
+                        <p>${producto.description}</p>
+                        <div class="precios">
+                            Precio Menudeo: $${producto.menudeo.toFixed(2)}<br>
+                            Precio Mayoreo: $${producto.mayoreo.toFixed(2)} (caja de ${producto.botellasPorCaja} botellas)
+                        </div>
+                        <select id="tipo-${producto.id}" class="select-tipo">
+                            <option value="menudeo">Menudeo</option>
+                            <option value="mayoreo">Mayoreo</option>
+                        </select>
+                        <input type="number" id="cantidad-${producto.id}" class="cantidad-input" value="1" min="1">
+                        <button onclick="agregarAlCarrito(${producto.id})">Añadir al Carrito</button>
+                    `;
+                    menuProductos.appendChild(card);
+                });
+            }
+
+            function obtenerCarrito() {
+                return JSON.parse(localStorage.getItem('carrito')) || [];
+            }
+
+            function guardarCarrito(carrito) {
+                localStorage.setItem('carrito', JSON.stringify(carrito));
+            }
+
+            function actualizarContadorCarrito() {
+                const carrito = obtenerCarrito();
+                // Calcula la cantidad total de ítems únicos en el carrito
+                document.getElementById('cart-count').textContent = carrito.length;
+            }
+
+            window.agregarAlCarrito = function(productoId) {
+                const productosDisponibles = obtenerProductos();
+                const producto = productosDisponibles.find(p => p.id === productoId);
+
+                if (producto) {
+                    const tipoElement = document.getElementById(`tipo-${productoId}`);
+                    const cantidadElement = document.getElementById(`cantidad-${productoId}`);
+                    
+                    const tipoCompra = tipoElement.value;
+                    let cantidad = parseInt(cantidadElement.value, 10);
+
+                    if (isNaN(cantidad) || cantidad <= 0) {
+                        mostrarMensaje('La cantidad debe ser al menos 1.', 'error');
+                        return;
+                    }
+
+                    const carrito = obtenerCarrito();
+                    // Crea un ID único para el ítem del carrito (productoId + tipoCompra)
+                    const cartItemId = `${productoId}-${tipoCompra}`;
+
+                    const itemEnCarrito = carrito.find(item => item.cartItemId === cartItemId);
+
+                    let priceToUse;
+                    if (tipoCompra === 'menudeo') {
+                        priceToUse = producto.menudeo;
+                    } else {
+                        // Para mayoreo, el precio es por caja, y la cantidad es el número de cajas.
+                        // El precio total se calculará como (precio por botella * botellas por caja * cantidad de cajas)
+                        priceToUse = producto.mayoreo; // Precio por botella en mayoreo
+                    }
+
+                    if (itemEnCarrito) {
+                        itemEnCarrito.quantity += cantidad;
+                    } else {
+                        carrito.push({
+                            id: producto.id,
+                            cartItemId: cartItemId, // ID único para el item en el carrito
+                            name: producto.name,
+                            price: priceToUse, // Precio unitario de la botella según el tipo
+                            type: tipoCompra, // 'menudeo' o 'mayoreo'
+                            image: producto.image,
+                            quantity: cantidad,
+                            botellasPorCaja: producto.botellasPorCaja // Para referencia si es mayoreo
+                        });
+                    }
+
+                    guardarCarrito(carrito);
+                    actualizarContadorCarrito();
+                    mostrarMensaje('¡Producto añadido al carrito!');
+                }
+            };
+
+            function mostrarMensaje(mensaje, tipo = 'success') {
+                mensajeAgregado.textContent = mensaje;
+                if (tipo === 'success') {
+                    mensajeAgregado.style.backgroundColor = '#28a745';
+                } else {
+                    mensajeAgregado.style.backgroundColor = '#dc3545'; // Rojo para errores
+                }
+                mensajeAgregado.style.display = 'block';
+                setTimeout(() => {
+                    mensajeAgregado.style.display = 'none';
+                }, 3000); // Ocultar después de 3 segundos
+            }
+
+            renderizarProductos();
+            actualizarContadorCarrito();
+        });
+    </script>
+</body>
+</html>
