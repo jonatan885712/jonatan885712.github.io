@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Finalizar Compra</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: #f7f6f3;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            background: #222;
+            color: #fff;
+            padding: 16px 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 70px;
+            margin-right: 24px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        nav {
+            margin-left: auto;
+        }
+
+        nav a {
+            color: #fff;
+            margin: 0 20px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.05em;
+            transition: color 0.3s ease, transform 0.2s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: #d4af37;
+            transform: translateY(-2px);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #d4af37;
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            padding: 40px 30px 30px 30px;
+        }
+        h1, h2, h3 {
+            color: #2d2d2d;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+        h1 {
+            font-size: 2.2em;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.6em;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .resumen-carrito, .detalle-pago, .mensaje-final {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #fcfcfc;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .item-carrito {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dotted #e1e1e1;
+        }
+        .item-carrito:last-child {
+            border-bottom: none;
+        }
+        .item-carrito span {
+            font-size: 1em;
+            color: #555;
+        }
+        .total-carrito {
+            font-weight: 700;
+            font-size: 1.3em;
+            text-align: right;
+            margin-top: 20px;
+            color: #2d2d2d;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        input[type="text"], input[type="email"], input[type="number"], input[type="tel"], select {
+            width: calc(100% - 22px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="tel"]:focus, select:focus {
+            border-color: #d4af37;
+            outline: none;
+        }
+        .campos-tarjeta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .campo-tarjeta-completo {
+            grid-column: 1 / 3;
+        }
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        button.primary {
+            background-color: #d4af37;
+            color: #fff;
+        }
+        button.primary:hover:not(:disabled) {
+            background-color: #c09d2e;
+            transform: translateY(-1px);
+        }
+        button.primary:disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+        button.secondary {
+            background-color: #f0f0f0;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+        button.secondary:hover {
+            background-color: #e6e6e6;
+        }
+        .mensaje-exito {
+            background-color: #e9ffe9;
+            color: #28a745;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-top: 30px;
+            border: 1px solid #d4ffd4;
+        }
+        .mensaje-exito svg {
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+            margin-right: 15px;
+        }
+        .barcode-container {
+            text-align: center;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px dashed #ccc;
+            border-radius: 10px;
+        }
+        .barcode-container p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            color: #333;
+        }
+        .barcode-container img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+        }
+        .hidden {
+            display: none;
+        }
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .payment-methods button {
+            flex: 1;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            transition: all 0.2s;
+            color: #555;
+            font-weight: 600;
+            font-size: 1em;
+        }
+        .payment-methods button.active {
+            background-color: #fff;
+            border-color: #d4af37;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            color: #2d2d2d;
+        }
+        .payment-methods button:hover {
+            border-color: #d4af37;
+        }
+        .payment-loading {
+            background-color: #fff3e0;
+            color: #ff9800;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-top: 30px;
+            border: 1px solid #ffe0b2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="IMAGENES JOSE CUERVO/JOSE CUERVO LOGO blanco.png" alt="Logo Tequilera Jose Cuervo" class="logo">
+        <nav>
+            <a href="index.html">Página Principal</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="mixiologia.html">Mixología</a>
+            <a href="carrito.html">Carrito</a>
+            <a href="ver_pedido.html">Ver Pedido</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Finalizar Compra</h1>
+
+        <div class="resumen-carrito">
+            <h2>Resumen del Pedido</h2>
+            <div id="items-carrito">
+            </div>
+            <div class="total-carrito" id="total-carrito">
+                Total: $0.00
+            </div>
+        </div>
+
+        <form id="checkout-form">
+            <div class="detalle-pago">
+                <h2>Información de Envío</h2>
+                <label for="nombre-completo">Nombre Completo</label>
+                <input type="text" id="nombre-completo" required>
+    
+                <label for="direccion">Dirección de Envío</label>
+                <input type="text" id="direccion" required>
+    
+                <label for="ciudad">Ciudad</label>
+                <input type="text" id="ciudad">
+            </div>
+
+            <div class="detalle-pago">
+                <h2>Método de Pago</h2>
+                <div class="payment-methods">
+                    <button type="button" id="card-btn" class="active" data-payment-method="card">Tarjeta</button>
+                    <button type="button" id="transfer-btn" data-payment-method="transfer">Transferencia</button>
+                    <button type="button" id="presencial-btn" data-payment-method="presencial">Pago Presencial</button>
+                </div>
+
+                <div id="payment-fields">
+                    <div id="card-fields" class="payment-option">
+                        <label for="numero-tarjeta">Número de Tarjeta</label>
+                        <input type="text" id="numero-tarjeta" placeholder="XXXX-XXXX-XXXX-XXXX" required>
+                        <div class="campos-tarjeta">
+                            <div>
+                                <label for="fecha-expiracion">Fecha de Expiración</label>
+                                <input type="text" id="fecha-expiracion" placeholder="MM/AA" required>
+                            </div>
+                            <div>
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" placeholder="XXX" required>
+                            </div>
+                        </div>
+                        <div class="campo-tarjeta-completo">
+                            <label for="nombre-tarjeta">Nombre en la Tarjeta</label>
+                            <input type="text" id="nombre-tarjeta" required>
+                        </div>
+                    </div>
+                    
+                    <div id="transfer-fields" class="payment-option hidden">
+                        <p>Realiza la transferencia a la siguiente cuenta:</p>
+                        <p><strong>Banco:</strong> BBVA</p>
+                        <p><strong>Número de Cuenta:</strong> 1234567890</p>
+                        <p><strong>Clabe:</strong> 012345678901234567</p>
+                        <label for="comprobante">Adjuntar Comprobante de Pago (PDF)</label>
+                        <input type="file" id="comprobante" accept="application/pdf">
+                        <div id="transfer-loading" class="payment-loading hidden" style="margin-top: 20px;">
+                            <span>Se está comprobando su pago. Por favor, espere...</span>
+                        </div>
+                    </div>
+
+                    <div id="presencial-fields" class="payment-option hidden">
+                        <p>Favor de pagar en una de las siguientes sucursales externas. Tu pedido estará listo para recoger después de la validación del pago.</p>
+                        
+                        <label for="nombre-presencial">Nombre del Cliente</label>
+                        <input type="text" id="nombre-presencial" required>
+                        <label for="ubicacion-presencial">Tu Ubicación (Ciudad)</label>
+                        <input type="text" id="ubicacion-presencial" required>
+
+                        <div id="sucursales-select-container">
+                            <label for="tienda-seleccionada">Selecciona una sucursal para pagar</label>
+                            <select id="tienda-seleccionada" required>
+                                <option value="">-- Selecciona una sucursal --</option>
+                                <option value="Oxxo">Oxxo</option>
+                                <option value="Aurrera">Bodega Aurrera</option>
+                                <option value="Walmart">Walmart</option>
+                            </select>
+                        </div>
+
+                        <div id="presencial-loading" class="payment-loading hidden" style="margin-top: 20px;">
+                            <span>Estamos procesando tu orden. Por favor, espere...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button type="button" class="secondary" onclick="window.location.href='index.html'">Volver al Catálogo</button>
+                <button type="submit" class="primary" id="finalizar-btn">Pagar y Finalizar</button>
+            </div>
+        </form>
+
+        <div id="mensaje-exito" class="hidden mensaje-exito">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M0 0h24v24H0V0z" fill="none"/>
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            <span id="mensaje-exito-texto">¡Gracias por tu compra!</span>
+            <div class="barcode-container">
+                <p>Favor de guardar este código de pedido para ver el estado de tu compra.</p>
+                <p>Tu código de pedido es: <strong id="codigo-pedido"></strong></p>
+                <a id="ver-pedido-btn" href="#" class="primary" style="text-decoration: none; display: inline-block; margin-top: 15px;">Ver estado de mi pedido</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemsCarritoDiv = document.getElementById('items-carrito');
+            const totalCarritoDiv = document.getElementById('total-carrito');
+            const checkoutForm = document.getElementById('checkout-form');
+            const mensajeExitoDiv = document.getElementById('mensaje-exito');
+            const codigoPedidoSpan = document.getElementById('codigo-pedido');
+            const verPedidoBtn = document.getElementById('ver-pedido-btn');
+            const finalizarBtn = document.getElementById('finalizar-btn');
+            const comprobanteInput = document.getElementById('comprobante');
+            const transferLoadingDiv = document.getElementById('transfer-loading');
+            const presencialLoadingDiv = document.getElementById('presencial-loading');
+            const allInputs = checkoutForm.querySelectorAll('input, select');
+
+            // --- Datos de productos para referencia (los mismos que en carrito.html) ---
+            const allProducts = [
+                {
+                    id: 1,
+                    name: 'Maestro Doble',
+                    description: 'Tequila Maestro Doble de Jose Cuervo. Un tequila ultra-premium 100% de agave azul.',
+                    image: "/IMAGENES JOSE CUERVO/1800.jpeg",
+                    menudeo: 450.00,
+                    mayoreo: 400.00,
+                    botellasPorCaja: 12
+                },
+                {
+                    id: 2,
+                    name: 'Tequila Jose Cuervo Tradicional',
+                    description: 'El tequila tradicional de Jose Cuervo, perfecto para margaritas o para tomar solo.',
+                    image: "/IMAGENES JOSE CUERVO/1800.jpeg",
+                    menudeo: 380.00,
+                    mayoreo: 340.00,
+                    botellasPorCaja: 12
+                },
+                {
+                    id: 3,
+                    name: 'Jose Cuervo Especial',
+                    description: 'Tequila Jose Cuervo Especial, un clásico versátil ideal para cocteles.',
+                    image: "/IMAGENES JOSE CUERVO/1800.jpeg",
+                    menudeo: 320.00,
+                    mayoreo: 280.00,
+                    botellasPorCaja: 12
+                },
+                {
+                    id: 4,
+                    name: 'Tequila 1800',
+                    description: 'Tequila 1800, 100% de agave azul, con un sabor suave y complejo.',
+                    image: "/IMAGENES JOSE CUERVO/1800.jpeg",
+                    menudeo: 550.00,
+                    mayoreo: 500.00,
+                    botellasPorCaja: 6
+                },
+            ];
+            // --- Fin de datos de productos ---
+            
+            // Función para calcular el precio unitario real (copiada de carrito.html)
+            function calcularPrecioUnitarioReal(item) {
+                const productoBase = allProducts.find(p => p.id === item.id);
+                if (!productoBase) return 0;
+
+                if (item.type === 'menudeo') {
+                    return productoBase.menudeo;
+                } else if (item.type === 'mayoreo') {
+                    return productoBase.mayoreo;
+                }
+                return 0;
+            }
+
+            let cart = JSON.parse(localStorage.getItem('carrito')) || [];
+            let total = 0;
+
+            if (cart.length > 0) {
+                cart.forEach(item => {
+                    const productoBase = allProducts.find(p => p.id === item.id);
+                    if (!productoBase) return;
+
+                    let subtotal;
+                    let tipoTexto;
+
+                    if (item.type === 'menudeo') {
+                        subtotal = calcularPrecioUnitarioReal(item) * item.quantity;
+                        tipoTexto = `(${item.quantity} botellas)`;
+                    } else { // Mayoreo
+                        subtotal = calcularPrecioUnitarioReal(item) * productoBase.botellasPorCaja * item.quantity;
+                        tipoTexto = `(${item.quantity} cajas)`;
+                    }
+                    
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'item-carrito';
+                    itemDiv.innerHTML = `
+                        <span>${item.name} ${tipoTexto}</span>
+                        <span>$${subtotal.toFixed(2)}</span>
+                    `;
+                    itemsCarritoDiv.appendChild(itemDiv);
+                    
+                    total += subtotal;
+                });
+                
+                totalCarritoDiv.textContent = `Total: $${total.toFixed(2)}`;
+            } else {
+                itemsCarritoDiv.innerHTML = '<p>El carrito está vacío.</p>';
+                finalizarBtn.disabled = true;
+            }
+
+            function generateOrderAndShowSuccess(status = 'Pendiente', paymentMethod) {
+                const orderCode = 'JCT' + Math.random().toString(36).substr(2, 5).toUpperCase();
+
+                const completedOrders = JSON.parse(localStorage.getItem('completedOrders')) || [];
+                const newOrder = {
+                    orderCode: orderCode,
+                    orderDate: new Date().toISOString(),
+                    total: total,
+                    status: status,
+                    items: cart,
+                    shippingInfo: {
+                        name: document.getElementById('nombre-completo').value,
+                        address: document.getElementById('direccion').value,
+                        city: document.getElementById('ciudad').value
+                    }
+                };
+
+                // Añadir información específica del método de pago
+                if (paymentMethod === 'presencial') {
+                    newOrder.paymentDetails = {
+                        method: 'Pago en Tiendas',
+                        clientName: document.getElementById('nombre-presencial').value,
+                        clientLocation: document.getElementById('ubicacion-presencial').value,
+                        paymentStore: document.getElementById('tienda-seleccionada').value
+                    };
+                }
+
+                completedOrders.push(newOrder);
+                localStorage.setItem('completedOrders', JSON.stringify(completedOrders));
+                
+                localStorage.removeItem('carrito');
+
+                document.querySelector('.resumen-carrito').classList.add('hidden');
+                document.querySelector('.detalle-pago').classList.add('hidden');
+                checkoutForm.classList.add('hidden');
+                
+                codigoPedidoSpan.textContent = orderCode;
+                verPedidoBtn.href = `ver_pedido.html?codigo=${orderCode}`;
+                
+                // Actualiza el mensaje de éxito para reflejar el estado del pago
+                if (status === 'Pendiente') {
+                     document.getElementById('mensaje-exito-texto').textContent = '¡Gracias por tu compra! Tu pago será verificado en breve.';
+                } else if (status === 'En Verificación') {
+                     document.getElementById('mensaje-exito-texto').textContent = '¡Gracias por tu compra! Tu pago será verificado en breve. Recibirás una notificación cuando tu orden esté lista para recoger.';
+                } else if (status === 'Pago Presencial Pendiente') {
+                    const location = document.getElementById('tienda-seleccionada').value;
+                    document.getElementById('mensaje-exito-texto').textContent = `¡Gracias por tu compra! Tu orden está lista para ser pagada en ${location}. Presenta este código de pedido para realizar el pago.`;
+                } else {
+                     document.getElementById('mensaje-exito-texto').textContent = '¡Gracias por tu compra!';
+                }
+
+                mensajeExitoDiv.classList.remove('hidden');
+            }
+
+
+            const paymentMethodsButtons = document.querySelectorAll('.payment-methods button');
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            let currentPaymentMethod = 'card';
+
+            paymentMethodsButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    paymentMethodsButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentPaymentMethod = button.dataset.paymentMethod;
+                    paymentOptions.forEach(option => option.classList.add('hidden'));
+                    document.getElementById(currentPaymentMethod + '-fields').classList.remove('hidden');
+                    
+                    // Manejar la validación de los campos del formulario
+                    updateFormValidation();
+                });
+            });
+
+
+            // Función para actualizar la validación requerida de los campos
+            function updateFormValidation() {
+                // Quitar 'required' de todos los campos de pago
+                allInputs.forEach(input => {
+                    if (input.closest('.payment-option')) {
+                        input.removeAttribute('required');
+                    }
+                });
+
+                // Añadir 'required' solo a los campos del método de pago activo
+                const activePaymentFields = document.getElementById(currentPaymentMethod + '-fields');
+                if (activePaymentFields) {
+                    const inputsToRequire = activePaymentFields.querySelectorAll('input, select');
+                    inputsToRequire.forEach(input => {
+                        input.setAttribute('required', '');
+                    });
+                }
+            }
+
+            // Inicializar la validación al cargar la página
+            updateFormValidation();
+
+            // Manejar el envío del formulario
+            checkoutForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                if (currentPaymentMethod === 'card') {
+                    // Generar la orden y mostrar el mensaje de éxito inmediatamente
+                    generateOrderAndShowSuccess('Completada', 'card');
+                } else if (currentPaymentMethod === 'presencial') {
+                    // Mostrar el mensaje de carga y deshabilitar botones
+                    presencialLoadingDiv.classList.remove('hidden');
+                    finalizarBtn.disabled = true;
+
+                    // Simular un proceso de validación de 30 segundos
+                    setTimeout(() => {
+                        // Ocultar el mensaje de carga
+                        presencialLoadingDiv.classList.add('hidden');
+                        // Generar la orden y mostrar el mensaje de éxito
+                        generateOrderAndShowSuccess('Pago Presencial Pendiente', 'presencial');
+                    }, 30000); // 30 segundos
+                }
+            });
+
+            // Manejar la subida del comprobante para Transferencia
+            comprobanteInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    // Mostrar el mensaje de carga y deshabilitar botones
+                    transferLoadingDiv.classList.remove('hidden');
+                    finalizarBtn.disabled = true;
+
+                    // Simular un proceso de verificación de 30 segundos
+                    setTimeout(() => {
+                        // Ocultar el mensaje de carga
+                        transferLoadingDiv.classList.add('hidden');
+                        
+                        // Generar la orden y mostrar el mensaje de éxito
+                        generateOrderAndShowSuccess('En Verificación', 'transfer');
+                    }, 30000); // 30 segundos
+                }
+            });
+        });
+    </script>
+</body>
+</html>

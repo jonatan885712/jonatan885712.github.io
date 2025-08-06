@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Tequilera Jose Cuervo</title>
+    <style>
+        :root {
+            --primary-color: #222;
+            --secondary-color: #d4af37;
+            --background-light: #f8f8f8;
+            --background-dark: #eee;
+            --text-light: #fff;
+            --text-dark: #333;
+            --border-color: #ccc;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 20px;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100%;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar nav ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar nav ul li a {
+            color: var(--text-light);
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar nav ul li a.active {
+            background-color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+            color: var(--text-light);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .main-content {
+            margin-left: 250px; /* Offset for fixed sidebar */
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--text-light);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-light);
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.8em;
+        }
+
+        .user-info {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--text-light);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+        }
+
+        .card h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+
+        .card p {
+            font-size: 2.5em;
+            margin: 10px 0;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .content-section {
+            background-color: var(--text-light);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 30px;
+        }
+
+        .content-section h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: var(--background-dark);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #e9e9e9;
+        }
+
+        .btn-add {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .btn-add:hover {
+            background-color: #218838;
+        }
+
+        .action-buttons button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .action-buttons button:hover {
+            background-color: #0056b3;
+        }
+        
+        button.delete-btn {
+            background-color: #dc3545; /* Red */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 5px; /* Spacing between buttons */
+        }
+        button.delete-btn:hover {
+            background-color: #c82333;
+        }
+        button.view-details-btn {
+            background-color: #007bff; /* Blue */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        button.view-details-btn:hover {
+            background-color: #0056b3;
+        }
+        .order-status-select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 0.9em;
+        }
+        .hidden {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <nav>
+            <ul>
+                <li><a href="#" class="active" data-section="dashboard">Dashboard</a></li>
+                <li><a href="#" data-section="product-management">Gestión de Productos</a></li>
+                <li><a href="#" data-section="order-management">Gestión de Pedidos</a></li>
+                <li><a href="#" data-section="user-management">Gestión de Usuarios</a></li>
+            </ul>
+        </nav>
+        <button class="logout-btn" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Bienvenido, Administrador</h1>
+            <div class="user-info">gallegos.jonatan.uriel@gmail.com</div>
+        </header>
+
+        <section id="dashboard" class="content-section active">
+            <h2>Dashboard Resumen</h2>
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3>Productos en Catálogo</h3>
+                    <p id="dashboard-total-products">0</p>
+                </div>
+                <div class="card">
+                    <h3>Pedidos Pendientes</h3>
+                    <p id="dashboard-pending-orders">0</p>
+                </div>
+                <div class="card">
+                    <h3>Usuarios Registrados</h3>
+                    <p id="dashboard-registered-users">0</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="product-management" class="content-section hidden">
+            <h2>Gestión de Productos</h2>
+            <button class="btn-add" id="add-product-btn">Añadir Nuevo Producto</button>
+            <table id="product-list-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Precio Mayoreo</th>
+                        <th>Precio Menudeo</th>
+                        <th>Botellas/Caja</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+
+        <section id="order-management" class="content-section hidden">
+            <h2>Gestión de Pedidos</h2>
+            <table id="order-list-table">
+                <thead>
+                    <tr>
+                        <th>Código de Pedido</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+
+        <section id="user-management" class="content-section hidden">
+            <h2>Gestión de Usuarios</h2>
+            <table id="user-list-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Fecha de Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Navegación de la barra lateral ---
+            const sidebarLinks = document.querySelectorAll('.sidebar nav ul li a');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetSectionId = this.dataset.section;
+
+                    // Remover 'active' de todos los enlaces y 'hidden' de todas las secciones
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    contentSections.forEach(s => s.classList.add('hidden'));
+
+                    // Añadir 'active' al enlace clickeado y mostrar la sección correspondiente
+                    this.classList.add('active');
+                    document.getElementById(targetSectionId).classList.remove('hidden');
+                });
+            });
+
+            // --- Funciones para renderizar tablas y actualizar dashboard ---
+
+            // PRODUCTS Management
+            let products = JSON.parse(localStorage.getItem('products')) || [
+                // Initial example products if localStorage is empty
+                { id: 1, name: "Maestro Doble Tequila", priceWholesale: 400, priceRetail: 450, bottlesPerCase: 12 },
+                { id: 2, name: "Jose Cuervo Tradicional", priceWholesale: 340, priceRetail: 380, bottlesPerCase: 12 },
+                { id: 3, name: "Jose Cuervo Especial", priceWholesale: 280, priceRetail: 320, bottlesPerCase: 12 },
+                { id: 4, name: "Tequila 1800", priceWholesale: 500, priceRetail: 550, bottlesPerCase: 6 }
+            ];
+
+            // Save products to localStorage
+            function saveProducts() {
+                localStorage.setItem('products', JSON.stringify(products));
+            }
+
+            function renderProductTable() {
+                const productListBody = document.querySelector('#product-list-table tbody');
+                productListBody.innerHTML = '';
+                products.forEach(product => {
+                    const row = productListBody.insertRow();
+                    row.insertCell().textContent = product.id;
+                    row.insertCell().textContent = product.name;
+                    row.insertCell().textContent = `$${product.priceWholesale.toFixed(2)}`;
+                    row.insertCell().textContent = `$${product.priceRetail.toFixed(2)}`;
+                    row.insertCell().textContent = product.bottlesPerCase;
+                    const actionsCell = row.insertCell();
+                    actionsCell.innerHTML = `
+                        <button class="action-buttons" onclick="editProduct(${product.id})">Editar</button>
+                        <button class="action-buttons delete-btn" onclick="deleteProduct(${product.id})">Eliminar</button>
+                    `;
+                });
+                updateDashboardProductCount();
+            }
+
+            document.getElementById('add-product-btn').addEventListener('click', addProduct);
+
+            function addProduct() {
+                const name = prompt("Introduce el nombre del producto:");
+                if (!name) return;
+                const priceWholesale = parseFloat(prompt("Introduce el precio al por mayor:"));
+                if (isNaN(priceWholesale)) return;
+                const priceRetail = parseFloat(prompt("Introduce el precio al por menor:"));
+                if (isNaN(priceRetail)) return;
+                const bottlesPerCase = parseInt(prompt("Introduce el número de botellas por caja:"));
+                if (isNaN(bottlesPerCase)) return;
+
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                const newProduct = {
+                    id: newId,
+                    name: name,
+                    priceWholesale: priceWholesale,
+                    priceRetail: priceRetail,
+                    bottlesPerCase: bottlesPerCase
+                };
+                products.push(newProduct);
+                saveProducts();
+                renderProductTable();
+                alert("Producto añadido exitosamente.");
+            }
+
+            // Expose to global scope for onclick attributes
+            window.editProduct = function(productId) {
+                const productIndex = products.findIndex(p => p.id === productId);
+                if (productIndex === -1) {
+                    alert("Producto no encontrado.");
+                    return;
+                }
+                const product = products[productIndex];
+
+                const newName = prompt("Editar nombre:", product.name);
+                if (newName === null) return; // User cancelled
+                const newPriceWholesale = parseFloat(prompt("Editar precio al por mayor:", product.priceWholesale));
+                if (isNaN(newPriceWholesale)) return;
+                const newPriceRetail = parseFloat(prompt("Editar precio al por menor:", product.priceRetail));
+                if (isNaN(newPriceRetail)) return;
+                const newBottlesPerCase = parseInt(prompt("Editar botellas por caja:", product.bottlesPerCase));
+                if (isNaN(newBottlesPerCase)) return;
+
+                product.name = newName;
+                product.priceWholesale = newPriceWholesale;
+                product.priceRetail = newPriceRetail;
+                product.bottlesPerCase = newBottlesPerCase;
+
+                saveProducts();
+                renderProductTable();
+                alert("Producto actualizado exitosamente.");
+            };
+
+            // Expose to global scope for onclick attributes
+            window.deleteProduct = function(productId) {
+                if (confirm("¿Estás seguro de que quieres eliminar este producto?")) {
+                    products = products.filter(p => p.id !== productId);
+                    saveProducts();
+                    renderProductTable();
+                    alert("Producto eliminado exitosamente.");
+                }
+            };
+
+
+            // USERS Management
+            // Función para cargar y mostrar usuarios registrados desde localStorage
+            function loadAndDisplayUsers() {
+                const userListBody = document.querySelector('#user-list-table tbody');
+                userListBody.innerHTML = ''; // Limpiar filas existentes
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+
+                registeredUsers.forEach(user => {
+                    const row = userListBody.insertRow();
+                    row.insertCell().textContent = user.name;
+                    row.insertCell().textContent = user.email;
+                    row.insertCell().textContent = new Date(user.registrationDate).toLocaleDateString('es-ES'); // Formato de fecha
+                    const actionsCell = row.insertCell();
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Eliminar';
+                    deleteBtn.classList.add('delete-btn');
+                    deleteBtn.onclick = () => deleteUser(user.email); // Usar email como identificador único
+                    actionsCell.appendChild(deleteBtn);
+                });
+                updateDashboardUserCount();
+            }
+
+            // Expose to global scope for onclick attributes
+            window.deleteUser = function(email) {
+                if (confirm(`¿Estás seguro de que quieres eliminar al usuario con email ${email}?`)) {
+                    let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+                    users = users.filter(user => user.email !== email);
+                    localStorage.setItem('registeredUsers', JSON.stringify(users));
+                    loadAndDisplayUsers(); // Volver a renderizar la tabla
+                    alert(`Usuario con email ${email} eliminado.`);
+                }
+            };
+
+
+            // ORDERS Management
+            // Función para cargar y mostrar pedidos completados desde localStorage
+            function loadAndDisplayOrders() {
+                const orderListBody = document.querySelector('#order-list-table tbody');
+                orderListBody.innerHTML = ''; // Limpiar filas existentes
+                const completedOrders = JSON.parse(localStorage.getItem('completedOrders')) || [];
+
+                completedOrders.forEach(order => {
+                    const row = orderListBody.insertRow();
+                    row.insertCell().textContent = order.orderCode;
+                    row.insertCell().textContent = new Date(order.orderDate).toLocaleDateString('es-ES');
+                    row.insertCell().textContent = `$${order.total.toFixed(2)}`;
+
+                    const statusCell = row.insertCell();
+                    const statusSelect = document.createElement('select');
+                    statusSelect.classList.add('order-status-select');
+                    ['Pendiente', 'En Proceso', 'Completado', 'Cancelado'].forEach(status => {
+                        const option = document.createElement('option');
+                        option.value = status;
+                        option.textContent = status;
+                        if (order.status === status) {
+                            option.selected = true;
+                        }
+                        statusSelect.appendChild(option);
+                    });
+                    // Event listener para actualizar el estado del pedido en localStorage
+                    statusSelect.addEventListener('change', (event) => updateOrderStatus(order.orderCode, event.target.value));
+                    statusCell.appendChild(statusSelect);
+
+                    const actionsCell = row.insertCell();
+                    const viewDetailsBtn = document.createElement('button');
+                    viewDetailsBtn.textContent = 'Ver Detalles';
+                    viewDetailsBtn.classList.add('view-details-btn');
+                    viewDetailsBtn.onclick = () => viewOrderDetails(order); // Pasa el objeto de pedido completo
+                    actionsCell.appendChild(viewDetailsBtn);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Eliminar';
+                    deleteBtn.classList.add('delete-btn');
+                    deleteBtn.onclick = () => deleteOrder(order.orderCode);
+                    actionsCell.appendChild(deleteBtn);
+                });
+                updateDashboardPendingOrders();
+            }
+
+            // Expose to global scope for onclick attributes
+            window.updateOrderStatus = function(orderCode, newStatus) {
+                let orders = JSON.parse(localStorage.getItem('completedOrders')) || [];
+                const orderIndex = orders.findIndex(order => order.orderCode === orderCode);
+                if (orderIndex !== -1) {
+                    orders[orderIndex].status = newStatus;
+                    localStorage.setItem('completedOrders', JSON.stringify(orders));
+                    alert(`Estado del pedido ${orderCode} actualizado a ${newStatus}.`);
+                    updateDashboardPendingOrders(); // Actualizar el contador de pedidos pendientes
+                }
+            };
+
+            // Expose to global scope for onclick attributes
+            window.viewOrderDetails = function(order) {
+                let details = `Código de Pedido: ${order.orderCode}\nFecha: ${new Date(order.orderDate).toLocaleDateString('es-ES')}\nTotal: $${order.total.toFixed(2)}\nEstado: ${order.status}\n\nItems del Pedido:\n`;
+                order.items.forEach(item => {
+                    details += `- ${item.name} x ${item.quantity} ($${(item.price * item.quantity).toFixed(2)})\n`;
+                });
+                alert(details);
+            };
+
+            // Expose to global scope for onclick attributes
+            window.deleteOrder = function(orderCode) {
+                if (confirm(`¿Estás seguro de que quieres eliminar el pedido ${orderCode}?`)) {
+                    let orders = JSON.parse(localStorage.getItem('completedOrders')) || [];
+                    orders = orders.filter(order => order.orderCode !== orderCode);
+                    localStorage.setItem('completedOrders', JSON.stringify(orders));
+                    loadAndDisplayOrders(); // Volver a renderizar la tabla
+                    alert(`Pedido ${orderCode} eliminado.`);
+                }
+            }
+
+            // --- Actualizaciones del Dashboard ---
+            function updateDashboardProductCount() {
+                document.getElementById('dashboard-total-products').textContent = products.length;
+            }
+
+            function updateDashboardPendingOrders() {
+                const completedOrders = JSON.parse(localStorage.getItem('completedOrders')) || [];
+                let pendingCount = 0;
+                completedOrders.forEach(order => {
+                    // Considera 'Pendiente' y 'En Proceso' como pendientes
+                    if (order.status === 'Pendiente' || order.status === 'En Proceso') {
+                        pendingCount++;
+                    }
+                });
+                document.getElementById('dashboard-pending-orders').textContent = pendingCount;
+            }
+
+            function updateDashboardUserCount() {
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+                document.getElementById('dashboard-registered-users').textContent = registeredUsers.length;
+            }
+
+            // Llamadas iniciales para configurar los contadores del dashboard y renderizar las tablas
+            renderProductTable(); // Carga y muestra los productos desde localStorage
+            loadAndDisplayUsers(); // Carga y muestra los usuarios desde localStorage
+            loadAndDisplayOrders(); // Carga y muestra los pedidos desde localStorage
+        });
+    </script>
+</body>
+</html>

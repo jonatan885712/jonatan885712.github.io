@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tequilera Jose Cuervo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f8f5f2;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background: #222;
+            color: #fff;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        nav a:hover:not(.disabled) {
+            background: #bfa76f;
+        }
+        nav a.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .bienvenido {
+            margin-left: auto;
+            font-weight: bold;
+            color: #bfa76f;
+        }
+        .hidden {
+            display: none;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #0001;
+            padding: 32px;
+        }
+        h1 {
+            color: #bfa76f;
+            margin-bottom: 10px;
+        }
+        .descripcion {
+            font-size: 1.1em;
+            color: #444;
+            margin-bottom: 30px;
+        }
+        .registro, .crear-cuenta {
+            max-width: 350px;
+            margin: 40px auto;
+            background: #f4f1ed;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 4px #0001;
+        }
+        .registro h2, .crear-cuenta h2 {
+            color: #bfa76f;
+            margin-bottom: 18px;
+        }
+        .registro label, .crear-cuenta label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .registro input, .crear-cuenta input {
+            width: 100%;
+            padding: 7px;
+            margin-bottom: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .registro button, .crear-cuenta button {
+            background: #bfa76f;
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .registro a, .crear-cuenta a {
+            color: #bfa76f;
+            text-decoration: underline;
+            font-size: 0.95em;
+        }
+        .captcha {
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .captcha input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+        .footer-btn {
+            display: block;
+            margin: 40px auto 0 auto;
+            background: #bfa76f;
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" id="pagina-principal-link">Página Principal</a>
+        <span class="bienvenido hidden" id="bienvenido-msg"></span>
+        <a href="catalogo.html" class="disabled" id="catalogo-link">Catálogo</a>
+        <a href="mixiologia.html" class="disabled" id="mixiologia-link">Mixología</a>
+        <a href="carrito.html" class="disabled" id="carrito-link">Carrito</a>
+        <a href="ver_pedido.html" class="disabled" id="ver-pedido-link">Ver dónde va mi pedido</a>
+        <a href="admin.html" id="admin-mode-link">Modo Administrador</a>
+    </nav>
+    <div class="container" id="main-content">
+        <h1>Tequilera Jose Cuervo</h1>
+        <div class="descripcion">
+            Fundada en 1795, la Tequilera Jose Cuervo es la destilería de tequila más antigua de México y del mundo. 
+            Con más de dos siglos de tradición, ha sido pionera en la producción y exportación de tequila, manteniendo la calidad y el sabor que la distinguen internacionalmente. 
+            Nuestra pasión por el agave y el compromiso con la excelencia nos han convertido en un símbolo de la cultura mexicana.
+        </div>
+        <div style="text-align:center; margin-bottom: 30px;">
+            <img src="IMAGENES JOSE CUERVO/josecuervo.jpg" alt="Logo Tequilera Jose Cuervo" style="max-width: 300px; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px #0002;">
+        </div>
+        <p>Explora nuestro catálogo, aprende sobre mixología, revisa tu carrito o consulta el estado de tu pedido. Para acceder a estas funciones, primero debes registrarte.</p>
+    </div>
+    <button class="footer-btn" id="iniciar-registro-btn">Iniciar Registro</button>
+
+    <div class="registro hidden" id="registro-modal">
+        <h2>Registro</h2>
+        <form id="registro-form">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" required>
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" required>
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" required>
+            <div class="captcha">
+                <input type="checkbox" id="captcha" required>
+                <label for="captcha">No soy un robot</label>
+            </div>
+            <button type="submit">Registrarse</button>
+        </form>
+        <p>¿No tienes cuenta? <a href="#" id="crear-cuenta-link">Crear cuenta</a></p>
+    </div>
+
+    <div class="crear-cuenta hidden" id="crear-cuenta-modal">
+        <h2>Crear Cuenta</h2>
+        <form id="crear-cuenta-form">
+            <label for="nuevo-nombre">Nombre</label>
+            <input type="text" id="nuevo-nombre" required>
+            <label for="nuevo-email">Correo electrónico</label>
+            <input type="email" id="nuevo-email" required>
+            <label for="nuevo-password">Contraseña</label>
+            <input type="password" id="nuevo-password" required>
+            <div class="captcha">
+                <input type="checkbox" id="nuevo-captcha" required>
+                <label for="nuevo-captcha">No soy un robot</label>
+            </div>
+            <button type="submit">Crear Cuenta</button>
+        </form>
+    </div>
+
+    <script>
+        // Helper functions
+        function showRegistro() {
+            document.getElementById('registro-modal').classList.remove('hidden');
+            document.getElementById('crear-cuenta-modal').classList.add('hidden');
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('iniciar-registro-btn').classList.add('hidden');
+        }
+        function showCrearCuenta() {
+            document.getElementById('registro-modal').classList.add('hidden');
+            document.getElementById('crear-cuenta-modal').classList.remove('hidden');
+        }
+        function hideModals() {
+            document.getElementById('registro-modal').classList.add('hidden');
+            document.getElementById('crear-cuenta-modal').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('iniciar-registro-btn').classList.remove('hidden');
+        }
+        function enableMenu(nombre) {
+            // Habilitar enlaces de navegación para usuarios registrados
+            document.querySelectorAll('nav a').forEach(a => {
+                if (a.id !== 'admin-mode-link') { // No deshabilitar el enlace de administrador
+                    a.classList.remove('disabled');
+                }
+            });
+            document.getElementById('bienvenido-msg').textContent = 'Bienvenido, ' + nombre;
+            document.getElementById('bienvenido-msg').classList.remove('hidden');
+        }
+        function disableMenu() {
+            // Deshabilitar enlaces de navegación para usuarios no registrados (excepto Página Principal y Modo Administrador)
+            document.querySelectorAll('nav a:not(#pagina-principal-link):not(#admin-mode-link)').forEach(a => a.classList.add('disabled'));
+            document.getElementById('bienvenido-msg').classList.add('hidden');
+        }
+
+        // Initial state
+        let registrado = false;
+        let usuario = '';
+        
+        // --- Modo Administrador ---
+        // Contraseña predefinida para el acceso al modo administrador
+        const ADMIN_PASSWORD = "teamoemily712jolu"; 
+
+        document.getElementById('admin-mode-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            const password = prompt("Por favor, ingresa la contraseña de administrador:");
+            
+            if (password === ADMIN_PASSWORD) {
+                // Redirigir al panel de administrador si la contraseña es correcta
+                window.location.href = "admin.html"; 
+            } else {
+                alert("Contraseña incorrecta. Acceso denegado.");
+            }
+        });
+        // --- Fin Modo Administrador ---
+
+
+        // Menu navigation (incluyendo la lógica de registro/acceso para enlaces que requieren registro)
+        document.querySelectorAll('nav a:not(#pagina-principal-link):not(#admin-mode-link)').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (!registrado) {
+                    e.preventDefault();
+                    showRegistro();
+                }
+            });
+        });
+
+        // Iniciar registro desde botón abajo
+        document.getElementById('iniciar-registro-btn').addEventListener('click', showRegistro);
+
+        // Link a crear cuenta
+        document.getElementById('crear-cuenta-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showCrearCuenta();
+        });
+
+        // Registro form (Este formulario es para "iniciar sesión" con credenciales existentes, no para un nuevo registro basado en tu estructura HTML actual)
+        document.getElementById('registro-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!document.getElementById('captcha').checked) {
+                alert('Por favor, confirma que no eres un robot.');
+                return;
+            }
+            
+            let email = document.getElementById('email').value;
+            let password = document.getElementById('password').value; 
+            
+            let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+            const foundUser = registeredUsers.find(user => user.email === email);
+
+            if (foundUser) {
+                usuario = foundUser.name; 
+                registrado = true;
+                hideModals();
+                enableMenu(usuario);
+                alert('Sesión iniciada exitosamente.');
+            } else {
+                alert('Usuario no encontrado. Por favor, crea una cuenta.');
+            }
+        });
+
+        // Crear cuenta form
+        document.getElementById('crear-cuenta-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!document.getElementById('nuevo-captcha').checked) {
+                alert('Por favor, confirma que no eres un robot.');
+                return;
+            }
+
+            const newName = document.getElementById('nuevo-nombre').value;
+            const newEmail = document.getElementById('nuevo-email').value;
+            const newPassword = document.getElementById('nuevo-password').value; 
+
+            if (!newName || !newEmail || !newPassword) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+
+            let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+
+            // Check if user already exists (by email)
+            const userExists = registeredUsers.some(user => user.email === newEmail);
+            if (userExists) {
+                alert('Ya existe una cuenta con este correo electrónico.');
+                return;
+            }
+
+            const newUser = {
+                name: newName,
+                email: newEmail,
+                registrationDate: new Date().toISOString() 
+            };
+
+            registeredUsers.push(newUser);
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+
+            usuario = newName;
+            registrado = true;
+            hideModals();
+            enableMenu(usuario);
+            alert('Cuenta creada y sesión iniciada exitosamente.');
+        });
+
+        // Al cargar, deshabilitar menú excepto principal y admin
+        disableMenu();
+    </script>
+</body>
+</html>

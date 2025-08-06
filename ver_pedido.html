@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Seguimiento de Pedido</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: #f7f6f3;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            padding: 40px 30px 30px 30px;
+        }
+        h2 {
+            text-align: center;
+            color: #2d2d2d;
+            margin-bottom: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+        }
+        h3 {
+            text-align: center;
+            color: #2d2d2d;
+            font-size: 1.4em;
+            margin-bottom: 25px;
+        }
+        .input-group {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        label {
+            font-size: 1.1em;
+            color: #444;
+            font-weight: 600;
+        }
+        input[type="text"] {
+            padding: 12px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 75%;
+            max-width: 300px;
+            margin: 14px 0 8px 0;
+            outline: none;
+            box-sizing: border-box;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus {
+            border: 1.5px solid #d4af37;
+        }
+        button.primary, .btn-primary {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+            background-color: #d4af37;
+            color: #fff;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 22px;
+        }
+        button.primary:hover, .btn-primary:hover {
+            background-color: #c09d2e;
+            transform: translateY(-1px);
+        }
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 38px 0 18px 0;
+            position: relative;
+        }
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 22px;
+            right: -50%;
+            width: 100%;
+            height: 5px;
+            background: #e0e0e0;
+            z-index: 0;
+            border-radius: 3px;
+        }
+        .step.active:not(:last-child)::after {
+            background: #d4af37;
+        }
+        .circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px auto;
+            font-weight: bold;
+            color: #888;
+            font-size: 20px;
+            box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+            border: 3px solid #fff;
+            transition: background 0.2s, color 0.2s;
+        }
+        .step.active .circle {
+            background: #d4af37;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(212,175,55,0.2);
+        }
+        .label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+        .step.active .label {
+            color: #2d2d2d;
+            font-weight: 700;
+        }
+        .hidden {
+            display: none;
+        }
+        #estado-texto {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 500;
+        }
+        #error {
+            color: #e53935;
+            margin-top: 10px;
+            font-size: 15px;
+        }
+        .order-details-summary {
+            background-color: #fcfcfc;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .order-details-summary p {
+            margin: 8px 0;
+            font-size: 1em;
+            color: #555;
+        }
+        .order-details-summary p strong {
+            color: #2d2d2d;
+        }
+        #pedidos-recientes {
+            margin-top: 40px;
+        }
+        #pedidos-recientes h3 {
+            text-align: center;
+            color: #2d2d2d;
+            font-size: 1.4em;
+        }
+        #pedidos-recientes ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        #pedidos-recientes ul li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        #pedidos-recientes ul li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .order-info {
+            flex-grow: 1;
+        }
+        .order-info p {
+            margin: 0;
+            color: #555;
+            font-size: 0.95em;
+        }
+        .order-info .order-code {
+            font-weight: 700;
+            color: #2d2d2d;
+            font-size: 1.1em;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 18px 5vw 20px 5vw;
+            }
+            .progress-bar {
+                flex-direction: column;
+                gap: 18px;
+            }
+            .step:not(:last-child)::after {
+                width: 5px;
+                height: 100%;
+                top: 50%;
+                left: 50%;
+                right: auto;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Seguimiento de tu pedido</h2>
+        
+        <div id="input-section" class="input-group">
+            <label for="codigo">Ingresa tu código de pedido:</label><br>
+            <input type="text" id="codigo" placeholder="Ej: JCTABC12">
+            <br>
+            <button class="primary" onclick="verificarCodigo()">Ver pedido</button>
+            <div id="error"></div>
+        </div>
+
+        <div id="seguimiento-section" class="hidden">
+            <div class="order-details-summary">
+                <p><strong>Código de Pedido:</strong> <span id="detalle-codigo"></span></p>
+                <p><strong>Fecha de Compra:</strong> <span id="detalle-fecha"></span></p>
+                <p><strong>Total:</strong> <span id="detalle-total"></span></p>
+            </div>
+            
+            <div class="progress-bar" id="progress-bar">
+            </div>
+
+            <p id="estado-texto"></p>
+
+            <div class="order-details-summary" id="detalle-items-container">
+                <h3>Artículos del Pedido</h3>
+                <ul id="detalle-items"></ul>
+            </div>
+            
+            <a href="index.html" class="btn-primary" id="btn-principal">Ir a la página principal</a>
+        </div>
+
+        <div id="pedidos-recientes">
+            <h3>Pedidos Recientes</h3>
+            <ul id="lista-pedidos-recientes">
+                </ul>
+        </div>
+    </div>
+
+    <script>
+        const estadosMap = {
+            'Pendiente': { index: 0, label: "Preparando", texto: "Tu pedido está siendo preparado." },
+            'En Proceso': { index: 1, label: "En camino", texto: "Tu pedido está en camino. ¡Ya casi llega!" },
+            'Completado': { index: 2, label: "Entregado", texto: "¡Tu pedido ya fue entregado!" },
+            'Cancelado': { index: 3, label: "Cancelado", texto: "Tu pedido ha sido cancelado." }
+        };
+
+        const estados = ['Pendiente', 'En Proceso', 'Completado'];
+
+        function obtenerPedidosCompletados() {
+            return JSON.parse(localStorage.getItem('completedOrders')) || [];
+        }
+
+        function verificarCodigo() {
+            const codigo = document.getElementById('codigo').value.trim().toUpperCase();
+            const errorDiv = document.getElementById('error');
+            const pedidos = obtenerPedidosCompletados();
+            const pedidoEncontrado = pedidos.find(p => p.orderCode === codigo);
+
+            if (!codigo) {
+                errorDiv.textContent = "Por favor ingresa un código.";
+                return;
+            }
+
+            if (!pedidoEncontrado) {
+                errorDiv.textContent = "Código no encontrado. Intenta con otro.";
+                return;
+            }
+            
+            errorDiv.textContent = "";
+            mostrarSeguimiento(pedidoEncontrado);
+        }
+
+        function mostrarSeguimiento(pedido) {
+            document.getElementById('input-section').classList.add('hidden');
+            document.getElementById('pedidos-recientes').classList.add('hidden');
+            document.getElementById('seguimiento-section').classList.remove('hidden');
+
+            // Mostrar los detalles del pedido
+            document.getElementById('detalle-codigo').textContent = pedido.orderCode;
+            document.getElementById('detalle-fecha').textContent = new Date(pedido.orderDate).toLocaleDateString('es-ES');
+            document.getElementById('detalle-total').textContent = `$${pedido.total.toFixed(2)}`;
+
+            // Mostrar los artículos del pedido
+            const itemsList = document.getElementById('detalle-items');
+            itemsList.innerHTML = '';
+            pedido.items.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name} (${item.quantity} cajas) - $${(item.price * item.quantity).toFixed(2)}`;
+                itemsList.appendChild(li);
+            });
+
+            // Actualizar la barra de progreso
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.innerHTML = '';
+            
+            let estadoActualIndex = estados.indexOf(pedido.status);
+            if (pedido.status === 'Cancelado') {
+                estadoActualIndex = 3; // Estado especial de cancelación
+            }
+
+            estados.forEach((est, i) => { 
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'step' + (i <= estadoActualIndex ? ' active' : '');
+                stepDiv.innerHTML = `
+                    <div class="circle">${i + 1}</div>
+                    <div class="label">${estadosMap[est].label}</div>
+                `;
+                progressBar.appendChild(stepDiv);
+            });
+            
+            document.getElementById('estado-texto').textContent = estadosMap[pedido.status].texto;
+        }
+
+        function cargarPedidosRecientes() {
+            const pedidos = obtenerPedidosCompletados();
+            const listaPedidos = document.getElementById('lista-pedidos-recientes');
+            listaPedidos.innerHTML = ''; // Limpiar la lista
+
+            if (pedidos.length === 0) {
+                listaPedidos.innerHTML = '<p style="text-align: center; color: #666;">No hay pedidos recientes.</p>';
+                return;
+            }
+            
+            // Mostrar los 5 pedidos más recientes
+            const ultimosPedidos = pedidos.slice(-5).reverse();
+
+            ultimosPedidos.forEach(pedido => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div class="order-info">
+                        <p class="order-code">Código: ${pedido.orderCode}</p>
+                        <p>Fecha: ${new Date(pedido.orderDate).toLocaleDateString('es-ES')}</p>
+                        <p>Estado: ${pedido.status}</p>
+                    </div>
+                    <a href="ver_pedido.html?codigo=${pedido.orderCode}" class="btn-primary" style="margin-top: 0; padding: 10px 15px; font-size: 0.9em;">Ver detalles</a>
+                `;
+                listaPedidos.appendChild(li);
+            });
+        }
+
+        // Lógica para detectar el código en la URL al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const codigoUrl = params.get('codigo');
+            if (codigoUrl) {
+                document.getElementById('codigo').value = codigoUrl;
+                verificarCodigo();
+            } else {
+                cargarPedidosRecientes();
+            }
+        });
+    </script>
+</body>
+</html>

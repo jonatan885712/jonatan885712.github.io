@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Bebidas con Tequila</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            /* Define CSS Variables for consistent theming */
+            --primary-gold: #b8860b; /* Goldenrod */
+            --dark-gold: #6b4f1d; /* Darker tone for ingredients */
+            --light-gold: #f3e7c9; /* Light background for ingredients */
+            --dark-bg: #000; /* Black for navigation */
+            --light-bg: #f8f3e6; /* Light background for body */
+            --white: #fff;
+            --text-dark: #333;
+            --text-medium: #444;
+            --shadow-light: rgba(0,0,0,0.08);
+            --shadow-medium: rgba(0,0,0,0.15);
+            --shadow-accent: rgba(212,175,55,0.15); /* Gold-tinted shadow */
+        }
+
+        body {
+            background: var(--light-bg);
+            font-family: 'Montserrat', sans-serif; /* Applied Montserrat */
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+        
+        /* Navigation Bar */
+        .menu {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--dark-bg);
+            padding: 0.75rem 2rem; /* Adjusted padding */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Added stronger shadow */
+            position: sticky; /* Makes nav sticky */
+            top: 0;
+            z-index: 1000; /* Ensures nav is on top */
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo img {
+            height: 55px; /* Slightly larger */
+            width: 55px;
+            border-radius: 50%;
+            background: var(--white);
+            object-fit: cover;
+            margin-right: 0.85rem;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); /* Subtle glow effect */
+        }
+        .logo span {
+            color: var(--white);
+            font-size: 1.4rem; /* Slightly larger */
+            font-weight: 700; /* Bolder */
+            letter-spacing: 1.2px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Text shadow for depth */
+        }
+        .nav {
+            display: flex;
+            gap: 2.5rem; /* More spacing */
+        }
+        .nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1.15rem; /* Slightly larger font */
+            font-weight: 500;
+            transition: color 0.3s ease, transform 0.2s ease; /* Added transform transition */
+            position: relative; /* Needed for animated underline */
+        }
+        .nav a:hover {
+            color: var(--primary-gold);
+            transform: translateY(-2px); /* Slight lift on hover */
+        }
+        .nav a::after { /* Animated underline effect */
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary-gold);
+            transition: width 0.3s ease-out;
+        }
+        .nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            padding: 3rem 0 1.5rem 0; /* More padding */
+            background: linear-gradient(135deg, var(--light-bg) 0%, #ffe9c4 100%); /* Subtle gradient background */
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        header h1 {
+            color: var(--primary-gold);
+            font-size: 2.8em; /* Larger heading */
+            margin-bottom: 0.8rem;
+            letter-spacing: 1.5px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+        }
+        header p {
+            font-size: 1.2em;
+            color: var(--text-medium);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Catalog Grid */
+        .catalogo {
+            display: grid; /* Using CSS Grid for better layout control */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
+            justify-content: center; /* Center items if they don't fill a row */
+            gap: 2.5rem; /* Increased gap between items */
+            padding: 2rem 3rem; /* More padding around the grid */
+            max-width: 1200px; /* Max width for content, keeps it from stretching too wide */
+            margin: 0 auto; /* Center the entire grid */
+        }
+        .bebida {
+            background: var(--white);
+            border-radius: 18px; /* Slightly larger border-radius */
+            box-shadow: 0 6px 20px var(--shadow-light); /* Improved shadow for depth */
+            padding: 2rem 2rem 1.5rem 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions for hover */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(0,0,0,0.05); /* Subtle border */
+        }
+        .bebida:hover {
+            transform: translateY(-10px) scale(1.02); /* More pronounced lift on hover */
+            box-shadow: 0 12px 30px var(--shadow-medium); /* Stronger shadow on hover */
+        }
+        .bebida img {
+            width: 90px; /* Slightly larger images */
+            height: 90px;
+            object-fit: cover;
+            border-radius: 15px; /* Softer corners */
+            margin-bottom: 1.2rem;
+            box-shadow: 0 4px 12px var(--shadow-accent); /* Enhanced image shadow with accent color */
+            border: 2px solid var(--primary-gold); /* Gold border for images */
+        }
+        .bebida h2 {
+            color: var(--primary-gold);
+            font-size: 1.8em; /* Larger heading for drinks */
+            margin-top: 0;
+            margin-bottom: 0.6rem;
+            text-align: center;
+            letter-spacing: 0.8px;
+        }
+        .descripcion {
+            font-size: 1.05rem;
+            color: var(--text-medium);
+            margin-bottom: 1.5rem; /* More spacing */
+            text-align: center;
+            line-height: 1.7;
+        }
+        .ingredientes {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            text-align: left; /* Align list items to left within their container */
+        }
+        .ingredientes li {
+            background: var(--light-gold);
+            margin-bottom: 0.6rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px; /* Softer border-radius for list items */
+            color: var(--dark-gold);
+            font-size: 0.95rem;
+            display: flex; /* Use flex to align icon with text */
+            align-items: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05); /* Subtle shadow for list items */
+        }
+        .ingredientes li::before { /* Added an icon/emoji before each ingredient */
+            content: "🥃"; /* Whiskey glass emoji */
+            margin-right: 0.7rem;
+            font-size: 1.1em;
+            line-height: 1; /* Align emoji vertically */
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            .catalogo {
+                padding: 2rem;
+                gap: 2rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .menu {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+                padding: 1rem 1.5rem;
+            }
+            .nav {
+                width: 100%;
+                justify-content: space-around; /* Distribute nav items */
+                gap: 1rem;
+            }
+            .nav a {
+                font-size: 1rem;
+            }
+            header h1 {
+                font-size: 2.2em;
+            }
+            header p {
+                font-size: 1em;
+                padding: 0 1rem; /* Added padding to description on smaller screens */
+            }
+            .catalogo {
+                grid-template-columns: 1fr; /* Single column on smaller screens */
+                padding: 1.5rem;
+                gap: 1.5rem;
+            }
+            .bebida {
+                width: 100%; /* Full width within padding */
+                max-width: 380px; /* Limit max width for single column */
+                margin: 0 auto; /* Center single cards */
+            }
+        }
+        @media (max-width: 480px) {
+            .menu {
+                padding: 0.75rem 1rem;
+            }
+            .logo span {
+                font-size: 1.2rem;
+            }
+            .logo img {
+                height: 45px;
+                width: 45px;
+            }
+            .nav {
+                flex-wrap: wrap; /* Allow nav items to wrap */
+                justify-content: center;
+                gap: 0.8rem;
+            }
+            .nav a {
+                font-size: 0.95rem;
+            }
+            header h1 {
+                font-size: 1.8em;
+            }
+            .bebida h2 {
+                font-size: 1.6em;
+            }
+            .bebida {
+                padding: 1.5rem;
+            }
+            .ingredientes li {
+                font-size: 0.9em;
+                padding: 0.5rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="menu">
+        <div class="logo">
+            <img src="IMAGENES JOSE CUERVO/JOSE CUERVO LOGO blanco.png" alt="Logo Tequilera">
+            <span>Tequilera José Cuervo</span>
+        </div>
+        <div class="nav">
+            <a href="index.html">Página Principal</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="carrito.html">Carrito</a>
+            <a href="ver_pedido.html">Mi Pedido</a> </div>
+    </nav>
+    <header>
+        <h1>Catálogo de Bebidas con Tequila</h1>
+        <p>Descubre las mejores creaciones que puedes preparar con tequila</p>
+    </header>
+    <section class="catalogo">
+        <div class="bebida">
+            <img src="IMAGENES JOSE CUERVO/margarita clasica.jpg" alt="Margarita Clásica">
+            <h2>Margarita Clásica</h2>
+            <p class="descripcion">
+                Refrescante y cítrica, la Margarita es el cóctel por excelencia para disfrutar el tequila en su máxima expresión.
+            </p>
+            <ul class="ingredientes">
+                <li>50 ml de tequila blanco</li>
+                <li>25 ml de licor de naranja (triple sec)</li>
+                <li>25 ml de jugo de lima fresco</li>
+                <li>Sal para escarchar el vaso</li>
+                <li>Rodaja de lima para decorar</li>
+            </ul>
+        </div>
+        <div class="bebida">
+            <img src="IMAGENES JOSE CUERVO/tequila sunrise.jpg" alt="Tequila Sunrise">
+            <h2>Tequila Sunrise</h2>
+            <p class="descripcion">
+                Un cóctel vibrante y colorido, perfecto para comenzar el día o animar cualquier celebración.
+            </p>
+            <ul class="ingredientes">
+                <li>50 ml de tequila</li>
+                <li>100 ml de jugo de naranja</li>
+                <li>15 ml de granadina</li>
+                <li>Hielo</li>
+                <li>Rodaja de naranja y cereza para decorar</li>
+            </ul>
+        </div>
+        <div class="bebida">
+            <img src="IMAGENES JOSE CUERVO/paloma.jpg" alt="Paloma">
+            <h2>Paloma</h2>
+            <p class="descripcion">
+                La Paloma es una bebida fresca y burbujeante, ideal para los días calurosos y amantes de los sabores cítricos.
+            </p>
+            <ul class="ingredientes">
+                <li>50 ml de tequila</li>
+                <li>100 ml de refresco de toronja</li>
+                <li>10 ml de jugo de lima</li>
+                <li>Sal y hielo</li>
+                <li>Rodaja de toronja para decorar</li>
+            </ul>
+        </div>
+        <div class="bebida">
+            <img src="IMAGENES JOSE CUERVO/tequila sour.jpg" alt="Tequila Sour">
+            <h2>Tequila Sour</h2>
+            <p class="descripcion">
+                Un cóctel elegante y equilibrado, que combina la fuerza del tequila con la suavidad del limón y el dulzor del jarabe.
+            </p>
+            <ul class="ingredientes">
+                <li>50 ml de tequila</li>
+                <li>25 ml de jugo de limón fresco</li>
+                <li>20 ml de jarabe de azúcar</li>
+                <li>Clara de huevo (opcional)</li>
+                <li>Hielo y rodaja de limón para decorar</li>
+            </ul>
+        </div>
+        <div class="bebida">
+            <img src="IMAGENES JOSE CUERVO/bloody mary.jpg" alt="Bloody Maria">
+            <h2>Bloody Maria</h2>
+            <p class="descripcion">
+                Una versión mexicana del clásico Bloody Mary, ideal para quienes buscan un toque picante y diferente.
+            </p>
+            <ul class="ingredientes">
+                <li>50 ml de tequila</li>
+                <li>100 ml de jugo de tomate</li>
+                <li>10 ml de jugo de limón</li>
+                <li>Salsa inglesa y salsa picante al gusto</li>
+                <li>Sal, pimienta y apio para decorar</li>
+            </ul>
+        </div>
+        <div class="bebida">
+            <img src="IMAGENES JOSE CUERVO/tequini.jpg" alt="Tequini">
+            <h2>Tequini</h2>
+            <p class="descripcion">
+                Un giro mexicano al clásico Martini, sofisticado y perfecto para ocasiones especiales.
+            </p>
+            <ul class="ingredientes">
+                <li>50 ml de tequila blanco</li>
+                <li>15 ml de vermut seco</li>
+                <li>Hielo</li>
+                <li>Aceituna o twist de limón para decorar</li>
+            </ul>
+        </div>
+        <div class="bebida">
+            <img src="IMAGENES JOSE CUERVO/charro negro.jpg" alt="Charro Negro">
+            <h2>Charro Negro</h2>
+            <p class="descripcion">
+                Sencillo y refrescante, el Charro Negro es la mezcla perfecta de tequila y cola, con un toque cítrico.
+            </p>
+            <ul class="ingredientes">
+                <li>50 ml de tequila</li>
+                <li>Refresco de cola</li>
+                <li>Jugo de limón</li>
+                <li>Hielo y rodaja de limón para decorar</li>
+            </ul>
+        </div>
+        <div class="bebida">
+            <img src="IMAGENES JOSE CUERVO/matador.jpg" alt="Matador">
+            <h2>Matador</h2>
+            <p class="descripcion">
+                Exótico y tropical, el Matador combina el tequila con jugo de piña y lima para una experiencia única.
+            </p>
+            <ul class="ingredientes">
+                <li>50 ml de tequila</li>
+                <li>25 ml de jugo de lima</li>
+                <li>75 ml de jugo de piña</li>
+                <li>Hielo y rodaja de piña para decorar</li>
+            </ul>
+        </div>
+    </section>
+</body>
+</html>
